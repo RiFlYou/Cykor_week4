@@ -1,13 +1,12 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mongo:
     image: mongo
-    restart: always
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    ports:
+      - "27017:27017"
 
   server:
     build:
@@ -15,23 +14,25 @@ services:
       dockerfile: Dockerfile.server
     ports:
       - "5000:5000"
-    volumes:
-      - ./server:/app
     depends_on:
       - mongo
     environment:
       - MONGO_URI=mongodb://mongo:27017/mern_auth
+    volumes:
+      - ./server:/app
+      - /app/node_modules
 
-  client:
+  client:  
     build:
       context: ./client
       dockerfile: Dockerfile.client
     ports:
-      - "5173:5174"
-    stdin_open: true
-    tty: true
+      - "5173:5173"
     volumes:
       - ./client:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
 
 volumes:
   mongo-data:

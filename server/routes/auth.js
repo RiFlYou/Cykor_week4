@@ -5,7 +5,14 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
     
 router.post('/register', async (req, res) => {
+
     const { username, password } = req.body;
+
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+        return res.status(400).json({ message: '이미 존재하는 사용자입니다.' });
+    }
+
     try {
         const hashed = await bcrypt.hash(password, 10);
         const newUser = new User({ username, password: hashed });
