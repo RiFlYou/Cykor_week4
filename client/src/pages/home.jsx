@@ -43,6 +43,7 @@ function Home() {
         <div>
           <p>환영합니다, {user.username}님!</p>
           <button onClick={handleLogout}>로그아웃</button>
+          <button onClick={() => navigate('/write')}> 글쓰기</button>
         </div>
       ) : (
         <div>

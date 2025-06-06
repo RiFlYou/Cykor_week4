@@ -31,7 +31,10 @@ router.post('/login', async (req, res) => {
         if (!user) return res.status(401).json({ success: false, message: '유저 없음' });
             const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ success: false, message: '비밀번호 틀림' });
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const token = jwt.sign(
+                { id: user._id, username: user.username }, process.env.JWT_SECRET, 
+                { expiresIn: '1h' }
+            );
             res.json({ success: true, message: '로그인 성공', token});
     } 
     catch (err) {
