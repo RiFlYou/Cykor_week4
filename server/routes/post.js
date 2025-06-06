@@ -14,7 +14,8 @@ router.post('/', authMiddleware, async (req, res) => {
     await newPost.save();
 
     res.status(201).json({ success: true, post: newPost });
-  } catch (err) {
+  }
+  catch (err) {
     console.error('[POST /api/post] Error:', err); 
     res.status(500).json({ success: false, message: '서버 오류', error: err });
   }
@@ -24,7 +25,8 @@ router.get('/', async (req, res) => {
   try {
     const posts = await Post.find().sort({ createdAt: -1 }); 
     res.json({ posts });
-  } catch (err) {
+  } 
+  catch (err) {
     res.status(500).json({ message: '게시글 목록 불러오기 실패' });
   }
 });
@@ -40,24 +42,25 @@ router.put('/:id', authMiddleware, async (req, res) => {
       { new: true }
     );
 
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+    if (post.author !== req.user.username && !req.user.isAdmin) {
+      return res.status(403).json({ message: '수정 권한 없음' });
     }
 
     res.json(post);
   } 
   catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: '서버 오류' });
   }
 });
 
 router.get('/:id', async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: 'Post not found' });
+    if (!post) return res.status(404).json({ message: '글 없음' });
     res.json(post);
-  } catch (err) {
+  }
+  catch (err) {
     res.status(500).json({ message: '서버 오류' });
   }
 });
@@ -65,11 +68,12 @@ router.get('/:id', async (req, res) => {
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+    if (post.author !== req.user.username && !req.user.isAdmin) {
+      return res.status(403).json({ message: '삭제 권한 없음' });
     }
     res.json({ message: '삭제 완료' });
-  } catch (err) {
+  } 
+  catch (err) {
     console.error(err);
     res.status(500).json({ message: '서버 오류' });
   }

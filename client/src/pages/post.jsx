@@ -39,18 +39,24 @@ function Post() {
 
   return (
     <div>
-      <h2>{post.title}</h2>
-      <p><b>작성자:</b> {post.author}</p>
-      <p><b>작성일:</b> {new Date(post.createdAt).toLocaleString()}</p>
-      <p>{post.content}</p>
+        <h2>{post.title}</h2>
+        <p><b>작성자:</b> {post.author}</p>
+        <p><b>작성일:</b> {new Date(post.createdAt).toLocaleString()}</p>
+        <p>{post.content}</p>
 
-      <button onClick={() => navigate('/list')}>← 목록으로</button>
+        <button onClick={() => navigate('/list')}>← 목록으로</button>
 
-      {post.author === localStorage.getItem('username') && (
+        {(post.author === localStorage.getItem('username') || localStorage.getItem('isAdmin') === 'true') && (
+    <>
         <button onClick={handleDelete} style={{ marginLeft: '10px' }}>
-          삭제
+            삭제
         </button>
-      )}
+        <button onClick={() => navigate(`/edit/${post._id}`)} style={{ marginLeft: '10px' }}>
+            수정
+        </button>
+    </>
+)}
+
     </div>
   );
 }
