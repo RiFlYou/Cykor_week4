@@ -15,7 +15,7 @@ function Register() {
         });
         const data = await res.json();
         if (res.ok) {
-            alert('회원가입 성공! 로그인 페이지에서 한번 더 로그인해주세요!');
+            alert('회원가입 성공! 한번 더 로그인해주세요!');
             localStorage.setItem('token', data.token); 
             navigate('/'); 
         } 
