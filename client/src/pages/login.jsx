@@ -1,21 +1,28 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
     const res = await fetch('http://localhost:5000/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
+    
     const data = await res.json();
     if (data.success) {
       alert('로그인 성공!');
-      localStorage.setItem('username', username);
-    } else {
+      localStorage.setItem('token', data.token);
+      navigate('/');
+    } 
+    
+    else {
       alert(data.message || '로그인 실패');
     }
   };

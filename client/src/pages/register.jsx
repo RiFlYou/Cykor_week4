@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
     
 function Register() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
     
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -13,7 +15,9 @@ function Register() {
         });
         const data = await res.json();
         if (res.ok) {
-            alert('회원가입 성공!');
+            alert('회원가입 성공! 로그인 페이지에서 한번 더 로그인해주세요!');
+            localStorage.setItem('token', data.token); 
+            navigate('/'); 
         } 
         else {
             alert(data.message || '회원가입 실패');
