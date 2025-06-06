@@ -4,6 +4,8 @@ import Login from './pages/login';
 import Register from './pages/register';
 import Write from './pages/write';
 import List from './pages/list';
+import Edit from './pages/edit';
+import Post from './pages/post';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -15,6 +17,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/write" element={<Write />} />
         <Route path="/list" element={<List />} />
+        <Route path="/edit/:id" element={<Edit />} />
+        <Route path="/post/:id" element={<Post/>} />
       </Routes>
   );
 }
