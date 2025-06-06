@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
 function Write() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +22,10 @@ function Write() {
       alert('글이 등록되었습니다!');
       setTitle('');
       setContent('');
-    } catch (err) {
+      navigate("/list");
+    }
+     
+    catch (err) {
       alert('글 등록 실패');
     }
   };
