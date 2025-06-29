@@ -2,6 +2,16 @@ import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+//XSS 방어 입력갑 escape 처리하기
+
 function Write() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -14,7 +24,8 @@ function Write() {
 
     try {
       const res = await axios.post('http://localhost:5000/api/posts', {
-        title, content
+        title: escapeHtml(title),
+        content: escapeHtml(content)
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -24,9 +35,10 @@ function Write() {
       setContent('');
       navigate("/list");
     }
-     
+
     catch (err) {
       alert('글 등록 실패');
+      console.error(err);
     }
   };
 
