@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
+// XSS 방어 : HTML 특수문자 escape 함수
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function Edit() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -27,7 +37,8 @@ function Edit() {
 
     try {
       await axios.put(`http://localhost:5000/api/posts/${id}`, {
-        title, content
+        title: escapeHtml(title),
+        content: escapeHtml(content)
       }, {
         headers: {
           Authorization: `Bearer ${token}`
