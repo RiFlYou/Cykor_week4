@@ -2,6 +2,17 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// 복붙
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function Post() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,24 +50,24 @@ function Post() {
 
   return (
     <div>
-        <h2>{post.title}</h2>
-        <p><b>작성자:</b> {post.author}</p>
+        {/*  제목, 작성자, 내용에 escape 적용 */}
+        <h2 dangerouslySetInnerHTML={{ __html: escapeHtml(post.title) }} />
+        <p><b>작성자:</b> {escapeHtml(post.author)}</p>
         <p><b>작성일:</b> {new Date(post.createdAt).toLocaleString()}</p>
-        <p>{post.content}</p>
+        <p dangerouslySetInnerHTML={{ __html: escapeHtml(post.content) }} />
 
         <button onClick={() => navigate('/list')}>← 목록으로</button>
 
         {(post.author === localStorage.getItem('username') || localStorage.getItem('isAdmin') === 'true') && (
-    <>
-        <button onClick={handleDelete} style={{ marginLeft: '10px' }}>
-            삭제
-        </button>
-        <button onClick={() => navigate(`/edit/${post._id}`)} style={{ marginLeft: '10px' }}>
-            수정
-        </button>
-    </>
-)}
-
+          <>
+            <button onClick={handleDelete} style={{ marginLeft: '10px' }}>
+              삭제
+            </button>
+            <button onClick={() => navigate(`/edit/${post._id}`)} style={{ marginLeft: '10px' }}>
+              수정
+            </button>
+          </>
+        )}
     </div>
   );
 }
