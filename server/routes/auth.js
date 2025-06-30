@@ -1,11 +1,19 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const router = express.Router();
-
 router.post('/register', async (req, res) => {
   const { username, password } = req.body;
+
+  // 유효성 검사 3~12자 영어, 숫자, _만 가능
+  const usernameRegex = /^[a-zA-Z0-9_]{3,12}$/;
+  if (!usernameRegex.test(username)) {
+    return res.status(400).json({
+      message: '아이디는 3~12자의 영문자, 숫자, 밑줄(_)만 사용 가능합니다.'
+    });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({
+      message: '비밀번호는 최소 6자 이상이어야 합니다.'
+    });
+  }
 
   const existingUser = await User.findOne({ username });
   if (existingUser) {
@@ -21,52 +29,3 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ message: '에러 발생', error: err });
   }
 });
-
-router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const user = await User.findOne({ username });
-    if (!user) return res.status(401).json({ message: '유저 없음' });
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: '비밀번호 틀림' });
-
-    const token = jwt.sign(
-      { id: user._id, username: user.username, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    // 토큰을 쿠키로 전송
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: false,   
-      sameSite: 'Strict'
-    });
-
-    res.json({
-      message: '로그인 성공',
-      username: user.username,
-      isAdmin: user.isAdmin
-    });
-  } catch (err) {
-    res.status(500).json({ message: '로그인 에러', error: err });
-  }
-});
-
-// 쿠키에서 토큰 읽기
-router.get('/me', async (req, res) => {
-  const token = req.cookies?.token;
-  if (!token) return res.status(401).json({ message: 'No token' });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select('-password');
-    res.json(user);
-  } catch (err) {
-    res.status(401).json({ message: 'Invalid token' });
-  }
-});
-
-module.exports = router;
